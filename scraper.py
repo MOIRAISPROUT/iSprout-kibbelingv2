@@ -1,7 +1,7 @@
-# scraper.py — iSprout Radar: scant ALLE kantoren uit de masterlijst-CSV
-# Bron: Kantorenlijst_audit_NL(Kantorenlijst).csv (Big 4 + AV-Top 50 + overige)
-# Signaalbronnen: Google News per kantoor (incl. Accountancy Vanmorgen),
-#                 accountant.nl (globale feed), AFM (globale feed), vacature-scan.
+# scraper.py — iSprout Radar v2: scant alle kantoren uit de masterlijst-CSV
+# Nieuw in v2: delta-tracking vs vorige scan, vacature-anomalieen, wijzigingenlijst.
+# Bron: Kantorenlijst_audit_NL(Kantorenlijst).csv
+# Signaalbronnen: Google News per kantoor, accountant.nl, AFM, vacature-scan.
 # Output: leads.json — leest de app automatisch in.
 # Notities en contactgegevens uit de CSV worden NIET meegenomen (publieke repo).
 import feedparser, json, sys, csv, io, time, datetime
@@ -28,7 +28,6 @@ def kolom(rij, i):
     return rij[i].strip() if i < len(rij) else ""
 
 def naar_getal(s):
-    """'1,394.0' -> 1394.0 ; '7,780' -> 7780 ; '' -> None"""
     s = (s or "").replace(",", "").strip()
     if not s:
         return None
@@ -87,14 +86,14 @@ def coordinaat(plaats):
 
 rijen = list(csv.reader(io.StringIO(tekst)))
 kantoren = {}
-for rij in rijen[1:]:                      # kopregel overslaan
-    org      = kolom(rij, 3)               # "Naam organisatie"
-    plaats   = kolom(rij, 4)               # "Plaats (hoofdvestiging)"
-    klasse   = kolom(rij, 5)               # Big 4 / AV-Top 50 / ...
+for rij in rijen[1:]:
+    org      = kolom(rij, 3)
+    plaats   = kolom(rij, 4)
+    klasse   = kolom(rij, 5)
     fte      = naar_getal(kolom(rij, 8))
     omzet    = naar_getal(kolom(rij, 9))
-    netwerk  = kolom(rij, 15)              # "Internationaal netwerk"
-    eigenaar = kolom(rij, 0)               # initialen Tom/Mo/... (GEEN notities!)
+    netwerk  = kolom(rij, 15)
+    eigenaar = kolom(rij, 0)
     if not org or len(org) < 3:
         continue
     key = org.lower()
@@ -113,7 +112,21 @@ for rij in rijen[1:]:                      # kopregel overslaan
 
 print(f"{len(rijen)-1} rijen ingelezen -> {len(kantoren)} unieke kantoren")
 
-# ---------- 2. SIGNAALWOORDEN ----------
+# ---------- 2. VORIGE SCAN INLEZEN (voor deltas) ----------
+vorige_gen, VORIGE = "", {}
+try:
+    oud = json.load(open("leads.json", encoding="utf-8"))
+    vorige_gen = oud.get("gegenereerd", "")
+    for l in oud.get("leads", []):
+        VORIGE[str(l.get("name") or "").lower()] = l
+    if VORIGE:
+        print(f"Vorige scan gevonden ({vorige_gen}) — deltas worden berekend.")
+    else:
+        print("Geen vorige scan — dit is de eerste run (basis-meting).")
+except Exception:
+    print("Geen vorige scan — dit is de eerste run (basis-meting).")
+
+# ---------- 3. SIGNAALWOORDEN ----------
 WOORDEN_A = {"outsourc": 5, "uitbested": 5, "backoffice": 4, "werkvoorraad": 4,
              "werkdruk": 3, "capaciteit": 4, "capacity": 4, "remote": 3, "op afstand": 3}
 WOORDEN_B = {"vacature": 2, "werving": 3, "relocatie": 4, "expat": 4,
@@ -125,7 +138,7 @@ def gewicht(t, wb):
     t = t.lower()
     return sum(w for kw, w in wb.items() if kw in t)
 
-# ---------- 3. GLOBALE FEEDS ----------
+# ---------- 4. GLOBALE FEEDS ----------
 def laad_feed(url, bron):
     out = []
     try:
@@ -156,7 +169,7 @@ def match_globale_feeds(naam):
                 hits.append({**e, "a": gA, "b": gB, "groei": gG})
     return hits
 
-# ---------- 4. SCANS PER KANTOOR ----------
+# ---------- 5. SCANS PER KANTOOR ----------
 def scan_nieuws(naam):
     q = f'"{naam}" (overname OR groei OR vacature OR outsourcing OR uitbesteden OR werving) {DATUM_FILTER}'
     url = f"https://news.google.com/rss/search?q={q.replace(' ', '+')}&hl=nl&gl=NL&ceid=NL:nl"
@@ -189,25 +202,78 @@ def scan_vacatures(naam):
         pass
     return sigs
 
-# ---------- 5. HOOFDLOOP ----------
-leads = []
-totaal = len(kantoren)
+# ---------- 6. HOOFDLOOP MET DELTAS ----------
+leads, wijzigingen = [], []
+
 for i, k in enumerate(kantoren.values()):
     sigs = scan_nieuws(k["name"]) + scan_vacatures(k["name"]) + match_globale_feeds(k["name"])
     n_vac = sum(1 for s in sigs if "vacature" in s["bron"].lower())
     sA = min(100, 30 + sum(s["a"] for s in sigs) * 8 + sum(s["groei"] for s in sigs) * 4 + min(15, n_vac * 5))
     sB = min(100, 30 + sum(s["b"] for s in sigs) * 8 + min(20, n_vac * 5) + (8 if k["internationaal"] else 0))
-    leads.append({**k, "score_out": sA, "score_nl": sB,
-                  "vacatures": n_vac, "signalen": sigs})
-    if i % 25 == 0:
-        print(f"...{i}/{totaal} gescand", flush=True)
-    time.sleep(0.35)   # rustig aan naar Google toe
 
-# ---------- 6. WEGSCHRIJVEN ----------
+    # --- vergelijk met vorige scan ---
+    p = VORIGE.get(k["name"].lower())
+    d_out = d_nl = d_vac = n_nieuw = 0
+    anom = None
+    if p:
+        p_vac = int(p.get("vacatures") or 0)
+        d_out = sA - int(p.get("score_out") or 0)
+        d_nl  = sB - int(p.get("score_nl") or 0)
+        d_vac = n_vac - p_vac
+        oude_titels = {str(s.get("titel", "")).lower() for s in (p.get("signalen") or [])}
+        n_nieuw = sum(1 for s in sigs if str(s.get("titel", "")).lower() not in oude_titels)
+        # --- vacature-anomalieen ---
+        if d_vac >= 3 and n_vac >= 3:
+            anom = f"📈 vacatures opvallend toegenomen ({p_vac} → {n_vac})"
+        elif p_vac >= 2 and d_vac <= -2:
+            anom = f"📉 vacatures opvallend afgenomen ({p_vac} → {n_vac})"
+        elif n_vac >= 5:
+            anom = f"🔥 structureel veel vacatures ({n_vac})"
+    else:
+        if n_vac >= 5:
+            anom = f"🔥 structureel veel vacatures ({n_vac})"
+
+    leads.append({**k, "score_out": sA, "score_nl": sB,
+                  "delta_out": d_out, "delta_nl": d_nl,
+                  "nieuwe_signalen": n_nieuw, "vac_delta": d_vac,
+                  "anomalie": anom, "vacatures": n_vac, "signalen": sigs})
+
+    # --- wijzigingenlijst (voor de alert-balk in de app) ---
+    redenen = []
+    if n_nieuw:
+        redenen.append(f"🆕 {n_nieuw} nieuw{'e' if n_nieuw != 1 else ''} signaal{'en' if n_nieuw != 1 else ''}")
+    if d_out > 0:
+        redenen.append(f"⬆ Optie A {sA - d_out}→{sA}")
+    elif d_out < 0:
+        redenen.append(f"⬇ Optie A {sA - d_out}→{sA}")
+    if d_nl > 0:
+        redenen.append(f"⬆ Optie B {sB - d_nl}→{sB}")
+    elif d_nl < 0:
+        redenen.append(f"⬇ Optie B {sB - d_nl}→{sB}")
+    if abs(d_vac) >= 2:
+        richting = "+" if d_vac > 0 else ""
+        redenen.append(f"💼 vacatures {richting}{d_vac}")
+    if anom:
+        redenen.append(anom)
+    if redenen:
+        gewichtje = n_nieuw * 2 + abs(d_out) + abs(d_nl) + max(0, d_vac) * 3 + (5 if anom else 0)
+        wijzigingen.append({"naam": k["name"], "city": k["city"],
+                            "tekst": " · ".join(redenen), "gewicht": gewichtje})
+
+    if i % 25 == 0:
+        print(f"...{i}/{len(kantoren)} gescand", flush=True)
+    time.sleep(0.35)
+
+wijzigingen.sort(key=lambda w: w["gewicht"], reverse=True)
+wijzigingen = wijzigingen[:40]
+
+# ---------- 7. WEGSCHRIJVEN ----------
 json.dump({
     "gegenereerd": str(datetime.datetime.now()),
+    "vorige_scan": vorige_gen or None,
     "bron": "Masterlijst-CSV (Big 4 + AV-Top 50) + Google News (+vacatures) + accountant.nl + AFM",
     "let_op": "Scores zijn keyword-based, geen AI. Signalen bevatten echte titels, datums en links.",
+    "wijzigingen": wijzigingen,
     "leads": leads,
 }, open("leads.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-print(f"\nKlaar — {len(leads)} kantoren in leads.json.")
+print(f"\nKlaar — {len(leads)} kantoren in leads.json, {len(wijzigingen)} kantoren met wijzigingen.")

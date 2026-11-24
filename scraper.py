@@ -1,5 +1,6 @@
 # scraper.py — iSprout Radar v2: scant alle kantoren uit de masterlijst-CSV
-# Nieuw in v2: delta-tracking vs vorige scan, vacature-anomalieen, wijzigingenlijst.
+# Nieuw in v2: delta-tracking vs vorige scan, vacature-anomalieen, wijzigingenlijst,
+#              netwerk-naam wordt meegenomen voor het Netwerkoverzicht.
 # Bron: Kantorenlijst_audit_NL(Kantorenlijst).csv
 # Signaalbronnen: Google News per kantoor, accountant.nl, AFM, vacature-scan.
 # Output: leads.json — leest de app automatisch in.
@@ -106,6 +107,7 @@ for rij in rijen[1:]:
         "lat": lat, "lng": lng,
         "klasse": klasse or "Onbekend",
         "fte": fte, "omzet": omzet,
+        "netwerk": netwerk if netwerk else ("Internationaal" if False else "Onbekend"),
         "internationaal": "Onbekend" not in netwerk and bool(netwerk),
         "eigenaar": eigenaar if eigenaar.lower() != "x" else "",
     }

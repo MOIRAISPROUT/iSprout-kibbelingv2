@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iSprout Sales Radar</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Poppins',sans-serif; background:#f4f7f4; color:#181b17; display:flex; min-height:100vh; }
+  /* ---------- SIDEBAR ---------- */
+  aside { width:230px; background:#181b17; color:#cfe7d4; padding:22px 16px; flex-shrink:0; display:flex; flex-direction:column; gap:6px; }
+  .logo { display:flex; align-items:center; gap:10px; margin-bottom:26px; }
+  .logo h1 { font-size:18px; font-weight:700; color:#fff; }
+  .logo small { display:block; font-size:10px; font-weight:400; color:#9db5a3; }
+  nav button { display:block; width:100%; text-align:left; background:none; border:none; color:#cfe7d4;
+    font-family:inherit; font-size:14px; padding:11px 12px; border-radius:10px; cursor:pointer; margin-bottom:4px; }
+  nav button:hover { background:#2a2f28; }
+  nav button.active { background:#2e6b4f; color:#fff; font-weight:600; }
+  #statusBadge { margin-top:auto; font-size:11px; background:#2a2f28; padding:10px 12px; border-radius:10px; line-height:1.5; }
+  #statusBadge b { color:#cfe7d4; }
+  /* ---------- MAIN ---------- */
+  main { flex:1; padding:26px 32px; overflow-x:hidden; }
+  section { display:none; }
+  section.active { display:block; }
+  h2 { font-size:22px; margin-bottom:4px; }
+  .sub { color:#5a6b5e; font-size:13px; margin-bottom:18px; }
+  /* cards */
+  .cards { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:20px; }
+  .card { background:#fff; border-radius:14px; padding:16px 20px; min-width:150px; box-shadow:0 1px 4px rgba(24,27,23,.08); }
+  .card .n { font-size:26px; font-weight:700; color:#2e6b4f; }
+  .card .t { font-size:11px; color:#5a6b5e; }
+  /* controls */
+  .controls { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  .controls input, .controls select { font-family:inherit; font-size:13px; padding:9px 12px; border:1px solid #ccd8cf;
+    border-radius:10px; background:#fff; }
+  .controls input { flex:1; min-width:200px; }
+  /* lead list */
+  .lead { background:#fff; border-radius:14px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 4px rgba(24,27,23,.08); }
+  .lead .kop { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .lead .naam { font-weight:600; font-size:15px; }
+  .badge { font-size:10px; background:#e4f0e6; color:#2e6b4f; border-radius:20px; padding:3px 9px; }
+  .badge.int { background:#dfe9f5; color:#2e5b8f; }
+  .badge.eig { background:#f3ecd8; color:#8a6d1f; }
+  .plaats { font-size:12px; color:#5a6b5e; }
+  .scores { display:flex; gap:18px; margin-top:10px; flex-wrap:wrap; }
+  .score { flex:1; min-width:200px; }
+  .score .lbl { display:flex; justify-content:space-between; font-size:11px; color:#5a6b5e; margin-bottom:3px; }
+  .bar { height:7px; border-radius:6px; background:#e7ece8; overflow:hidden; }
+  .bar i { display:block; height:100%; border-radius:6px; }
+  .bar.a i { background:#2e6b4f; }
+  .bar.b i { background:#3a6ea5; }
+  .sig { margin-top:10px; font-size:12px; }
+  .sig a { color:#2e6b4f; text-decoration:none; }
+  .sig a:hover { text-decoration:underline; }
+  .sig .br { color:#8a97a0; font-size:10px; }
+  .vac { font-size:11px; color:#8a6d1f; margin-top:6px; }
+  /* waarom */
+  details.waarom { background:#fff; border-radius:14px; padding:16px 18px; margin-bottom:18px; box-shadow:0 1px 4px rgba(24,27,23,.08); }
+  details.waarom summary { font-weight:600; cursor:pointer; font-size:14px; }
+  details.waarom p { font-size:13px; color:#3c4a40; margin-top:10px; line-height:1.6; }
+  /* map */
+  #map { height:520px; border-radius:14px; box-shadow:0 1px 4px rgba(24,27,23,.08); }
+  .legend { margin-top:12px; font-size:12px; color:#3c4a40; display:flex; gap:16px; flex-wrap:wrap; }
+  .dot { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
+  /* netwerk */
+  .groep { background:#fff; border-radius:14px; padding:16px 18px; margin-bottom:14px; box-shadow:0 1px 4px rgba(24,27,23,.08); }
+  .groep h3 { font-size:15px; color:#2e6b4f; margin-bottom:8px; }
+  .groep ul { list-style:none; }
+  .groep li { font-size:13px; padding:5px 0; border-bottom:1px solid #eef2ee; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .groep li:last-child { border-bottom:none; }
+  .groep li span.city { color:#5a6b5e; font-size:12px; }
+  /* events */
+  .event { background:#fff; border-radius:14px; padding:14px 18px; margin-bottom:10px; box-shadow:0 1px 4px rgba(24,27,23,.08); font-size:13px; }
+  .event b { font-size:14px; }
+  .event .meta { color:#5a6b5e; font-size:12px; margin-top:3px; }
+  .event a { color:#2e6b4f; }
+  .evt-form { background:#fff; border-radius:14px; padding:16px 18px; margin-bottom:18px; box-shadow:0 1px 4px rgba(24,27,23,.08); }
+  .evt-form h3 { font-size:14px; margin-bottom:10px; }
+  .evt-form input { font-family:inherit; font-size:13px; padding:8px 10px; border:1px solid #ccd8cf; border-radius:8px; margin:0 8px 8px 0; }
+  .btn { font-family:inherit; font-size:13px; background:#2e6b4f; color:#fff; border:none; border-radius:10px;
+    padding:9px 16px; cursor:pointer; font-weight:600; }
+  .btn.ghost { background:#e4f0e6; color:#2e6b4f; }
+  h3.deeltitel { font-size:15px; margin:20px 0 10px; }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="logo">
+    <svg width="30" height="20" viewBox="0 0 30 20">
+      <circle cx="6" cy="10" r="5" fill="#cfe7d4"/>
+      <circle cx="15" cy="10" r="5" fill="#cfe7d4"/>
+      <circle cx="24" cy="10" r="5" fill="#cfe7d4"/>
+    </svg>
+    <div><h1>iSprout Radar</h1><small>Commerciële radar NL accountancy</small></div>
+  </div>
+  <nav>
+    <button data-tab="radar" class="active">🎯 AI Lead Radar</button>
+    <button data-tab="kaart">🗺️ Kantorenkaart</button>
+    <button data-tab="netwerk">🕸️ Netwerkoverzicht</button>
+    <button data-tab="events">📅 Evenementen</button>
+  </nav>
+  <div id="statusBadge">data laden…</div>
+</aside>
+
+<main>
+
+  <!-- ============ RADAR ============ -->
+  <section id="tab-radar" class="active">
+    <h2>AI Lead Radar</h2>
+    <p class="sub">Alle kantoren uit de masterlijst, gerangschikt op kans. Optie A = outsourcing (remote ZA-capaciteit), Optie B = plaatsing van ZA-professionals in Nederland.</p>
+
+    <details class="waarom">
+      <summary>❓ Waarom is dit een lead? (hoe de scores werken)</summary>
+      <p><b>Optie A (outsourcing):</b> hoog als er signalen zijn over werkdruk, capaciteitsproblemen,
+      uitbesteden/backoffice, groei of overnames — kantoren die tijdelijk meer werk hebben dan handen.
+      <b>Optie B (plaatsing NL):</b> hoog bij vacatures, werving, relocatie/expat-signalen en bij kantoren
+      met een internationaal netwerk (die zijn gewend aan buitenlandse professionals).
+      De scores zijn gebaseerd op echt nieuws van de afgelopen maanden (o.a. Accountancy Vanmorgen).
+      Klik op de signaaltitels om de bron te lezen. Grijze kantoren = nog geen signalen gevonden:
+      niet oninteressant, maar nog geen aanleiding gezien.</p>
+    </details>
+
+    <div class="cards" id="radarCards"></div>
+    <div class="controls">
+      <input id="zoek" type="text" placeholder="🔍 Zoek kantoor of plaats…">
+      <select id="sortKies">
+        <option value="score_out">Sorteer: Optie A-score</option>
+        <option value="score_nl">Sorteer: Optie B-score</option>
+        <option value="vacatures">Sorteer: vacatures</option>
+        <option value="name">Sorteer: naam</option>
+      </select>
+    </div>
+    <div id="leadLijst"></div>
+  </section>
+
+  <!-- ============ KAART ============ -->
+  <section id="tab-kaart">
+    <h2>Kantorenkaart</h2>
+    <p class="sub" id="kaartSub">Alle kantoren uit de masterlijst. Klik op een pin voor details.</p>
+    <div id="map"></div>
+    <div class="legend">
+      <span><span class="dot" style="background:#2e6b4f"></span>A-dominant (outsourcing)</span>
+      <span><span class="dot" style="background:#3a6ea5"></span>B-dominant (plaatsing NL)</span>
+      <span><span class="dot" style="background:#9aa79d"></span>Nog geen signalen</span>
+    </div>
+  </section>
+
+  <!-- ============ NETWERK ============ -->
+  <section id="tab-netwerk">
+    <h2>Netwerkoverzicht</h2>
+    <p class="sub">De kantoren gegroepeerd per categorie (Big 4, AV-Top 50, enz.).</p>
+    <div id="netwerkLijst"></div>
+  </section>
+
+  <!-- ============ EVENEMENTEN ============ -->
+  <section id="tab-events">
+    <h2>Evenementen</h2>
+    <p class="sub">Live gescande accountancy-evenementen + je eigen events, met agenda-export (.ics).</p>
+
+    <div class="evt-form">
+      <h3>➕ Eigen evenement toevoegen</h3>
+      <input id="evNaam" type="text" placeholder="Naam evenement">
+      <input id="evDatum" type="date">
+      <input id="evPlaats" type="text" placeholder="Plaats (optioneel)">
+      <input id="evLink" type="text" placeholder="Link (optioneel)">
+      <button class="btn" onclick="voegEigenEventToe()">Toevoegen</button>
+    </div>
+
+    <button class="btn ghost" onclick="downloadICS()">📥 Download agenda (.ics)</button>
+    <h3 class="deeltitel">🤖 Scanner-events &amp; eigen events</h3>
+    <div id="eventLijst"></div>
+  </section>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ================= DATA ================= */
+var DEMO_LEADS = [
+  { name:"Deloitte Accountants B.V.", city:"Rotterdam", lat:51.92, lng:4.48, klasse:"Big 4", fte:7780, omzet:1394.0, internationaal:true, eigenaar:"", score_out:38, score_nl:38, vacatures:0, signalen:[] },
+  { name:"PricewaterhouseCoopers Accountants N.V.", city:"Amsterdam", lat:52.37, lng:4.90, klasse:"Big 4", fte:5569, omzet:1079.5, internationaal:true, eigenaar:"", score_out:38, score_nl:38, vacatures:0, signalen:[] },
+  { name:"BDO Audit & Assurance B.V.", city:"Eindhoven", lat:51.44, lng:5.47, klasse:"AV-Top 50", fte:2965, omzet:379.9, internationaal:true, eigenaar:"", score_out:38, score_nl:38, vacatures:0, signalen:[] },
+  { name:"Forvis Mazars Accountants N.V.", city:"Rotterdam", lat:51.92, lng:4.48, klasse:"AV-Top 50", fte:1147, omzet:165.3, internationaal:true, eigenaar:"Mo", score_out:38, score_nl:46, vacatures:1, signalen:[] },
+  { name:"Newtone Audit N.V.", city:"Rosmalen", lat:51.59, lng:5.53, klasse:"AV-Top 50", fte:946, omzet:150.0, internationaal:false, eigenaar:"Tom + Mo", score_out:38, score_nl:38, vacatures:0, signalen:[] }
+];
+var LEADS = [];
+var EVENTS = [];
+var kaart = null;
+
+/* ================= HELPERS ================= */
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]; }); }
+function barA(v){ var s=Math.max(0,Math.min(100,Number(v)||0)); return '<div class="bar a"><i style="width:'+s+'%"></i></div>'; }
+function barB(v){ var s=Math.max(0,Math.min(100,Number(v)||0)); return '<div class="bar b"><i style="width:'+s+'%"></i></div>'; }
+function card(n,t){ return '<div class="card"><div class="n">'+n+'</div><div class="t">'+t+'</div></div>'; }
+function datumKort(d){ try { return new Date(d).toLocaleDateString("nl-NL",{day:"numeric",month:"short",year:"numeric"}); } catch(e){ return ""; } }
+
+/* ================= INLADEN ================= */
+async function laadData(){
+  var status = document.getElementById("statusBadge");
+  try {
+    var r = await fetch("leads.json?t=" + Date.now());           // cache-buster!
+    var d = await r.json();
+    LEADS = Array.isArray(d.leads) ? d.leads : [];
+    var gen = d.gegenereerd ? datumKort(d.gegenereerd) : "";
+    status.innerHTML = "<b>LIVE data:</b> " + LEADS.length + " kantoren" + (gen ? "<br>gegenereerd: " + gen : "");
+  } catch(e){
+    LEADS = DEMO_LEADS.slice();
+    status.innerHTML = "<b>DEMO data</b> (leads.json niet bereikbaar)";
+  }
+  try {
+    var r2 = await fetch("events.json?t=" + Date.now());
+    var d2 = await r2.json();
+    EVENTS = (d2.events || d2.evenementen || []).map(normEvent);
+  } catch(e){ EVENTS = []; }
+  renderAlles();
+}
+
+function normEvent(e){
+  return { titel: e.titel || e.title || e.naam || "Evenement",
+           datum: e.datum || e.date || "",
+           plaats: e.plaats || e.city || e.locatie || "",
+           link: e.link || e.url || "",
+           bron: e.bron || e.source || "scanner" };
+}
+
+/* ================= NAVIGATIE ================= */
+document.querySelectorAll("nav button").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll("nav button").forEach(function(x){ x.classList.remove("active"); });
+    document.querySelectorAll("section").forEach(function(x){ x.classList.remove("active"); });
+    b.classList.add("active");
+    document.getElementById("tab-" + b.dataset.tab).classList.add("active");
+    if (b.dataset.tab === "kaart") setTimeout(initKaart, 50);
+  });
+});
+
+/* ================= RADAR ================= */
+function renderRadar(){
+  var q = (document.getElementById("zoek").value || "").toLowerCase();
+  var sort = document.getElementById("sortKies").value;
+  var lijst = LEADS.filter(function(l){
+    return !q || (l.name||"").toLowerCase().indexOf(q) !== -1 || (l.city||"").toLowerCase().indexOf(q) !== -1;
+  });
+  lijst.sort(function(a,b){
+    if (sort === "name") return String(a.name).localeCompare(String(b.name));
+    return (Number(b[sort])||0) - (Number(a[sort])||0);
+  });
+
+  var totA = LEADS.filter(function(l){ return (l.score_out||0) >= 50; }).length;
+  var totB = LEADS.filter(function(l){ return (l.score_nl||0) >= 50; }).length;
+  var totV = LEADS.reduce(function(s,l){ return s + (Number(l.vacatures)||0); }, 0);
+  document.getElementById("radarCards").innerHTML =
+    card(LEADS.length, "kantoren op de radar") +
+    card(totA, "hete leads optie A") +
+    card(totB, "hete leads optie B") +
+    card(totV, "vacature-signalen");
+
+  document.getElementById("leadLijst").innerHTML = lijst.map(function(l){
+    var sigs = (l.signalen||[]).slice(0,5).map(function(s){
+      return '<div class="sig">📰 <a href="' + esc(s.link) + '" target="_blank" rel="noopener">' + esc(s.titel) + '</a>' +
+        ' <span class="br">' + esc(s.bron||"") + (s.datum ? " · " + datumKort(s.datum) : "") + '</span></div>';
+    }).join("");
+    return '<div class="lead">' +
+      '<div class="kop"><span class="naam">' + esc(l.name) + '</span>' +
+      (l.klasse ? '<span class="badge">' + esc(l.klasse) + '</span>' : "") +
+      (l.internationaal ? '<span class="badge int">internationaal netwerk</span>' : "") +
+      (l.eigenaar ? '<span class="badge eig">👤 ' + esc(l.eigenaar) + '</span>' : "") + '</div>' +
+      '<div class="plaats">' + esc(l.city||"") +
+        (l.fte ? " · " + Number(l.fte).toLocaleString("nl-NL") + " fte" : "") +
+        (l.omzet ? " · € " + l.omzet + " mln omzet" : "") + '</div>' +
+      '<div class="scores">' +
+        '<div class="score"><div class="lbl"><span>Optie A — outsourcing</span><b>' + (l.score_out||0) + '</b></div>' + barA(l.score_out) + '</div>' +
+        '<div class="score"><div class="lbl"><span>Optie B — plaatsing NL</span><b>' + (l.score_nl||0) + '</b></div>' + barB(l.score_nl) + '</div>' +
+      '</div>' +
+      ((Number(l.vacatures)||0) ? '<div class="vac">💼 ' + l.vacatures + ' vacature-signalen</div>' : "") +
+      sigs + '</div>';
+  }).join("") || '<p class="sub">Geen kantoren gevonden voor deze zoekopdracht.</p>';
+}
+document.getElementById("zoek").addEventListener("input", renderRadar);
+document.getElementById("sortKies").addEventListener("change", renderRadar);
+
+/* ================= KAART ================= */
+function initKaart(){
+  if (kaart) { kaart.invalidateSize(); return; }
+  kaart = L.map("map").setView([52.2, 5.3], 7);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    { attribution:"© OpenStreetMap-bijdragers" }).addTo(kaart);
+  LEADS.forEach(function(l){
+    var lat = Number(l.lat)||52.2, lng = Number(l.lng)||5.3;
+    var a = Number(l.score_out)||0, b = Number(l.score_nl)||0;
+    var kleur = (a >= b && a >= 50) ? "#2e6b4f" : (b > a && b >= 50) ? "#3a6ea5" : "#9aa79d";
+    var sigs = (l.signalen||[]).slice(0,3).map(function(s){
+      return '<div style="font-size:11px;margin-top:4px;">📰 <a href="' + esc(s.link) + '" target="_blank" rel="noopener">' + esc(s.titel) + '</a></div>';
+    }).join("");
+    L.circleMarker([lat, lng], { radius:6, color:kleur, fillColor:kleur, fillOpacity:.85, weight:1 })
+      .addTo(kaart)
+      .bindPopup('<b>' + esc(l.name) + '</b><br>' + esc(l.city||"") +
+        (l.klasse ? ' <span style="color:#2e6b4f;font-size:11px;">(' + esc(l.klasse) + ')</span>' : "") +
+        '<br>A: <b>' + a + '</b> · B: <b>' + b + '</b>' +
+        ((Number(l.vacatures)||0) ? ' · 💼 ' + l.vacatures : "") + sigs);
+  });
+  document.getElementById("kaartSub").textContent =
+    "Alle " + LEADS.length + " kantoren uit de masterlijst. Groen = A-dominant (outsourcing), blauw = B-dominant (plaatsing NL), grijs = nog geen signalen.";
+}
+
+/* ================= NETWERK ================= */
+function renderNetwerk(){
+  var groepen = {};
+  LEADS.forEach(function(l){ var k = l.klasse || "Overig"; if (!groepen[k]) groepen[k] = []; groepen[k].push(l); });
+  var volgorde = Object.keys(groepen).sort(function(x,y){ return groepen[y].length - groepen[x].length; });
+  document.getElementById("netwerkLijst").innerHTML = volgorde.map(function(k){
+    return '<div class="groep"><h3>' + esc(k) + ' <span style="font-weight:400;color:#5a6b5e;font-size:12px;">(' + groepen[k].length + ' kantoren)</span></h3><ul>' +
+      groepen[k].sort(function(a,b){ return String(a.name).localeCompare(String(b.name)); }).map(function(l){
+        return '<li><span>' + esc(l.name) + (l.internationaal ? ' <span class="badge int" style="font-size:9px;">int.</span>' : "") + '</span>' +
+          '<span class="city">' + esc(l.city||"") + '</span></li>';
+      }).join("") + '</ul></div>';
+  }).join("");
+}
+
+/* ================= EVENEMENTEN ================= */
+function eigenEvents(){ try { return JSON.parse(localStorage.getItem("isprout_events")||"[]"); } catch(e){ return []; } }
+function voegEigenEventToe(){
+  var n = document.getElementById("evNaam").value.trim();
+  if (!n) { alert("Vul minimaal een naam in."); return; }
+  var lijst = eigenEvents();
+  lijst.push({ titel:n, datum:document.getElementById("evDatum").value,
+               plaats:document.getElementById("evPlaats").value.trim(),
+               link:document.getElementById("evLink").value.trim(), bron:"eigen" });
+  localStorage.setItem("isprout_events", JSON.stringify(lijst));
+  ["evNaam","evDatum","evPlaats","evLink"].forEach(function(id){ document.getElementById(id).value = ""; });
+  renderEvents();
+}
+function renderEvents(){
+  var alles = eigenEvents().map(normEvent).concat(EVENTS)
+    .sort(function(a,b){ return String(a.datum).localeCompare(String(b.datum)); });
+  document.getElementById("eventLijst").innerHTML = alles.map(function(ev){
+    return '<div class="event"><b>' + esc(ev.titel) + '</b>' + (ev.bron==="eigen" ? ' <span class="badge eig" style="font-size:9px;">eigen</span>' : "") +
+      '<div class="meta">' + (ev.datum ? "📅 " + datumKort(ev.datum) + " · " : "") + esc(ev.plaats||"") +
+      (ev.bron && ev.bron!=="eigen" ? " · 🤖 " + esc(ev.bron) : "") + '</div>' +
+      (ev.link ? '<a href="' + esc(ev.link) + '" target="_blank" rel="noopener">meer info →</a>' : "") + '</div>';
+  }).join("") || '<p class="sub">Nog geen evenementen gevonden.</p>';
+}
+function downloadICS(){
+  var alles = eigenEvents().concat(EVENTS);
+  var regels = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//iSprout Radar//NL"];
+  alles.forEach(function(ev){
+    var d = ev.datum ? String(ev.datum).slice(0,10).replace(/-/g,"") : "";
+    if (!/^\d{8}$/.test(d)) return;
+    regels.push("BEGIN:VEVENT","UID:" + Math.random().toString(36).slice(2) + "@isprout",
+      "DTSTART;VALUE=DATE:" + d, "SUMMARY:" + String(ev.titel).replace(/,/g,"\\,"),
+      "LOCATION:" + String(ev.plaats||"").replace(/,/g,"\\,"), "END:VEVENT");
+  });
+  regels.push("END:VCALENDAR");
+  var blob = new Blob([regels.join("\r\n")], { type:"text/calendar" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "isprout-agenda.ics"; a.click();
+}
+
+/* ================= START ================= */
+function renderAlles(){ renderRadar(); renderNetwerk(); renderEvents(); }
+laadData();
+</script>
+</body>
+</html>

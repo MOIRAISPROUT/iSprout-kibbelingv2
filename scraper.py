@@ -1,11 +1,12 @@
-# scraper.py — iSprout Radar v2: scant alle kantoren uit de masterlijst-CSV
-# Nieuw in v2: delta-tracking vs vorige scan, vacature-anomalieen, wijzigingenlijst,
-#              netwerk-naam wordt meegenomen voor het Netwerkoverzicht.
-# Bron: Kantorenlijst_audit_NL(Kantorenlijst).csv
-# Signaalbronnen: Google News per kantoor, accountant.nl, AFM, vacature-scan.
-# Output: leads.json — leest de app automatisch in.
-# Notities en contactgegevens uit de CSV worden NIET meegenomen (publieke repo).
-import feedparser, json, sys, csv, io, time, datetime
+# scraper.py — iSprout Radar v4 (COMPLEET)
+# Per kantoor: Google News (nieuws+vacatures), eigen website (carrierepagina =
+# vacatures tellen; team/partner/contact-pagina's = suggesties voor belangrijke
+# personen met rol, e-mail en telefoon), plus algemene e-mail/telefoon van de site.
+# Behouden: delta-tracking, vacature-anomalieen, wijzigingenlijst, netwerkveld.
+# Contactpersonen komen als SUGGESTIES in leads.json (publieke kantoorwebsite-info);
+# in de app bevestigt de gebruiker ze pas als echte contacten.
+import feedparser, json, sys, csv, io, time, datetime, re, urllib.request, urllib.parse
+from html import unescape
 
 # ---------- 1. CSV INLEZEN ----------
 BRON = "Kantorenlijst_audit_NL(Kantorenlijst).csv"
@@ -37,7 +38,21 @@ def naar_getal(s):
     except ValueError:
         return None
 
-# Plaats -> coördinaat (benaderend, city-level pins)
+rijen_all = list(csv.reader(io.StringIO(tekst)))
+HEADER = rijen_all[0] if rijen_all else []
+
+def vind_kolom(woorden):
+    for i, h in enumerate(HEADER):
+        hl = (h or "").lower()
+        if any(w in hl for w in woorden):
+            return i
+    return None
+
+SITE_IDX = vind_kolom(["website", "url", "internet", "homepage"])
+print("Website-kolom: " + (f"gevonden (kolom {SITE_IDX}: '{HEADER[SITE_IDX]}')"
+                           if SITE_IDX is not None
+                           else "NIET gevonden — website-scan wordt overgeslagen"))
+
 COORD = {
     "rotterdam": (51.92, 4.48), "amsterdam": (52.37, 4.90), "eindhoven": (51.44, 5.47),
     "amstelveen": (52.30, 4.86), "arnhem": (51.98, 5.90), "nijkerk": (52.22, 5.49),
@@ -85,9 +100,8 @@ def coordinaat(plaats):
     key = (plaats or "").lower().strip()
     return COORD.get(key, (52.20, 5.30))
 
-rijen = list(csv.reader(io.StringIO(tekst)))
 kantoren = {}
-for rij in rijen[1:]:
+for rij in rijen_all[1:]:
     org      = kolom(rij, 3)
     plaats   = kolom(rij, 4)
     klasse   = kolom(rij, 5)
@@ -95,6 +109,9 @@ for rij in rijen[1:]:
     omzet    = naar_getal(kolom(rij, 9))
     netwerk  = kolom(rij, 15)
     eigenaar = kolom(rij, 0)
+    website  = kolom(rij, SITE_IDX) if SITE_IDX is not None else ""
+    if website and not website.lower().startswith("http"):
+        website = "https://" + website
     if not org or len(org) < 3:
         continue
     key = org.lower()
@@ -107,26 +124,25 @@ for rij in rijen[1:]:
         "lat": lat, "lng": lng,
         "klasse": klasse or "Onbekend",
         "fte": fte, "omzet": omzet,
-        "netwerk": netwerk if netwerk else ("Internationaal" if False else "Onbekend"),
+        "netwerk": netwerk if netwerk else "Onbekend",
         "internationaal": "Onbekend" not in netwerk and bool(netwerk),
         "eigenaar": eigenaar if eigenaar.lower() != "x" else "",
+        "website": website,
     }
 
-print(f"{len(rijen)-1} rijen ingelezen -> {len(kantoren)} unieke kantoren")
+print(f"{len(rijen_all)-1} rijen ingelezen -> {len(kantoren)} unieke kantoren")
 
-# ---------- 2. VORIGE SCAN INLEZEN (voor deltas) ----------
+# ---------- 2. VORIGE SCAN (voor deltas) ----------
 vorige_gen, VORIGE = "", {}
 try:
     oud = json.load(open("leads.json", encoding="utf-8"))
     vorige_gen = oud.get("gegenereerd", "")
     for l in oud.get("leads", []):
         VORIGE[str(l.get("name") or "").lower()] = l
-    if VORIGE:
-        print(f"Vorige scan gevonden ({vorige_gen}) — deltas worden berekend.")
-    else:
-        print("Geen vorige scan — dit is de eerste run (basis-meting).")
+    print(f"Vorige scan gevonden ({vorige_gen}) — deltas worden berekend."
+          if VORIGE else "Geen vorige scan — basis-meting.")
 except Exception:
-    print("Geen vorige scan — dit is de eerste run (basis-meting).")
+    print("Geen vorige scan — basis-meting.")
 
 # ---------- 3. SIGNAALWOORDEN ----------
 WOORDEN_A = {"outsourc": 5, "uitbested": 5, "backoffice": 4, "werkvoorraad": 4,
@@ -164,23 +180,19 @@ def match_globale_feeds(naam):
     hits = []
     for e in GLOBAL_FEEDS:
         if token in e["titel"].lower():
-            gA = gewicht(e["titel"], WOORDEN_A)
-            gB = gewicht(e["titel"], WOORDEN_B)
-            gG = gewicht(e["titel"], WOORDEN_G)
+            gA, gB, gG = gewicht(e["titel"], WOORDEN_A), gewicht(e["titel"], WOORDEN_B), gewicht(e["titel"], WOORDEN_G)
             if gA + gB + gG > 0:
                 hits.append({**e, "a": gA, "b": gB, "groei": gG})
     return hits
 
-# ---------- 5. SCANS PER KANTOOR ----------
+# ---------- 5. NIEUWSSCANS ----------
 def scan_nieuws(naam):
     q = f'"{naam}" (overname OR groei OR vacature OR outsourcing OR uitbesteden OR werving) {DATUM_FILTER}'
     url = f"https://news.google.com/rss/search?q={q.replace(' ', '+')}&hl=nl&gl=NL&ceid=NL:nl"
     sigs = []
     try:
         for e in feedparser.parse(url).entries[:10]:
-            gA = gewicht(e.title, WOORDEN_A)
-            gB = gewicht(e.title, WOORDEN_B)
-            gG = gewicht(e.title, WOORDEN_G)
+            gA, gB, gG = gewicht(e.title, WOORDEN_A), gewicht(e.title, WOORDEN_B), gewicht(e.title, WOORDEN_G)
             if gA + gB + gG > 0:
                 sigs.append({"titel": e.title, "link": e.link,
                              "datum": getattr(e, "published", ""),
@@ -204,43 +216,216 @@ def scan_vacatures(naam):
         pass
     return sigs
 
-# ---------- 6. HOOFDLOOP MET DELTAS ----------
+# ---------- 6. WEBSITE-SCAN ----------
+CARW  = ("vacature", "werken", "carriere", "carrière", "jobs", "sollicit")
+TEAMW = ("team", "partner", "directie", "over-ons", "over ons", "medewerkers",
+         "people", "contact", "onze mensen", "organisatie", "management")
+
+def haal_pagina(url):
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+        "Accept-Language": "nl-NL,nl;q=0.9,en;q=0.5",
+    })
+    with urllib.request.urlopen(req, timeout=10) as r:
+        raw = r.read()
+        ct = (r.headers.get("Content-Type") or "")
+        enc = ct.split("charset=")[-1].strip("'\" ") if "charset=" in ct else "utf-8"
+        try:
+            return raw.decode(enc, "ignore")
+        except Exception:
+            return raw.decode("utf-8", "ignore")
+
+def tekst_regels(html):
+    html = re.sub(r"<(script|style).*?</\1>", " ", html, flags=re.S | re.I)
+    html = re.sub(r"<[^>]+>", "\n", html)
+    regels = [re.sub(r"\s+", " ", l).strip() for l in unescape(html).split("\n")]
+    return [l for l in regels if l]
+
+EMAIL_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,4}")
+TEL_RE   = re.compile(r"(?:\+31|0031|0)[\s\-/(]?(?:\(0\))?[\s\-/]?(?:6[\s\-/]?\d{7}|\d{1,3}[\s\-/]?\d{6,8})(?!\d)")
+ROL_PAT  = re.compile(r"\b(managing partner|managing director|mede[- ]directeur|regiodirecteur|"
+                      r"hr[- ]?manager|hr[- ]?adviseur|personeels[a-z]*|recruiter|wervings[a-z]*|"
+                      r"partner|directeur|vennoot|zakelijk leider|office manager)\b", re.I)
+
+STOP = {"accountants", "accountancy", "accountant", "adviseurs", "advies", "en", "van",
+        "de", "den", "der", "het", "the", "groep", "group", "nieuws", "contact", "home",
+        "over", "ons", "meer", "lezen", "wij", "onze", "bv", "nv", "team"}
+
+def tel_schoon(t):
+    t = (t or "").strip()
+    d = re.sub(r"\D", "", t)
+    if 9 <= len(d) <= 12 and t.startswith(("0", "+31", "0031")):
+        return t
+    return ""
+
+def email_schoon(e):
+    return "" if re.search(r"\.(png|jpe?g|gif|webp|svg)$", e or "", re.I) else e
+
+def naam_voor_rol(regel, pos):
+    """Neemt de dichtstbijzijnde reeks van 2-3 hoofdletterwoorden vóór de rol."""
+    woorden = regel[:pos].rstrip(":·|—–- ").split()
+    cur = []
+    for w in reversed(woorden):
+        if (w[:1].isupper() and len(w) > 1 and w.lower() not in STOP
+                and not any(ch.isdigit() for ch in w)):
+            cur.append(w)
+            if len(cur) == 3:
+                break
+        else:
+            break
+    if len(cur) >= 2:
+        return " ".join(reversed(cur))
+    return ""
+
+def contacten_uit_regels(regels):
+    gevonden = {}
+    for idx, regel in enumerate(regels):
+        m = ROL_PAT.search(regel)
+        if not m:
+            continue
+        naam = naam_voor_rol(regel, m.start())
+        if not naam:
+            continue
+        rol = m.group(0).lower()
+        nxt = regels[idx + 1] if idx + 1 < len(regels) else ""
+        em = ""
+        for bron in (regel, nxt):
+            mm = EMAIL_RE.search(bron)
+            if mm:
+                em = email_schoon(mm.group(0))
+                break
+        tm = ""
+        for bron in (regel, nxt):
+            mm = TEL_RE.search(bron)
+            if mm:
+                tm = tel_schoon(mm.group(0))
+                break
+        item = gevonden.setdefault(naam.lower(), {"naam": naam, "rol": rol, "email": em, "tel": tm})
+        if em and not item["email"]:
+            item["email"] = em
+        if tm and not item["tel"]:
+            item["tel"] = tm
+    return list(gevonden.values())
+
+def scan_website(base):
+    """Homepage -> carrierepagina (vacatures) + team/contact-pagina's (contacten)."""
+    if not base:
+        return 0, "", [], "", ""
+    try:
+        home = haal_pagina(base)
+    except Exception:
+        return 0, "", [], "", ""
+    regels_home = tekst_regels(home)
+    n_home = len(re.findall(r"\bvacature", home, re.I))
+    contacten = contacten_uit_regels(regels_home)
+
+    carriere, teamlinks = "", []
+    try:
+        for href, txt in re.findall(r'<a[^>]+href=["\']([^"\'#]+)["\'][^>]*>(.*?)</a>',
+                                    home, re.I | re.S):
+            hay = (href + " " + re.sub(r"<[^>]+>", " ", txt)).lower()
+            vol = urllib.parse.urljoin(base, href.strip())
+            if not vol.startswith("http"):
+                continue
+            if not carriere and any(w in hay for w in CARW):
+                carriere = vol
+            if (len(teamlinks) < 2 and any(w in hay for w in TEAMW)
+                    and vol not in teamlinks
+                    and vol.rstrip("/") != base.rstrip("/")):
+                teamlinks.append(vol)
+    except Exception:
+        pass
+
+    n_site = n_home
+    if carriere:
+        try:
+            n_site = max(len(re.findall(r"\bvacature", haal_pagina(carriere), re.I)), n_home)
+        except Exception:
+            pass
+        time.sleep(0.2)
+    for tl in teamlinks:
+        try:
+            contacten += contacten_uit_regels(tekst_regels(haal_pagina(tl)))
+        except Exception:
+            pass
+        time.sleep(0.2)
+
+    uniek, gezien = [], set()
+    for c in contacten:
+        key = (c["naam"].lower(), c["rol"][:12])
+        if key in gezien:
+            continue
+        gezien.add(key)
+        uniek.append(c)
+    uniek = uniek[:8]
+
+    em_al, tm_al = "", ""
+    for e in EMAIL_RE.findall(home):
+        e = email_schoon(e)
+        if e and re.match(r"^(info|contact|welcome|office|hello)@", e, re.I):
+            em_al = e
+            break
+        if e and not em_al:
+            em_al = e
+    mm = TEL_RE.search("\n".join(regels_home))
+    tm_al = tel_schoon(mm.group(0)) if mm else ""
+
+    return n_site, carriere, uniek, em_al, tm_al
+
+# ---------- 7. HOOFDLOOP ----------
 leads, wijzigingen = [], []
 
 for i, k in enumerate(kantoren.values()):
     sigs = scan_nieuws(k["name"]) + scan_vacatures(k["name"]) + match_globale_feeds(k["name"])
     n_vac = sum(1 for s in sigs if "vacature" in s["bron"].lower())
-    sA = min(100, 30 + sum(s["a"] for s in sigs) * 8 + sum(s["groei"] for s in sigs) * 4 + min(15, n_vac * 5))
-    sB = min(100, 30 + sum(s["b"] for s in sigs) * 8 + min(20, n_vac * 5) + (8 if k["internationaal"] else 0))
 
-    # --- vergelijk met vorige scan ---
+    n_site, carr, sugg, em_al, tm_al = scan_website(k["website"])
+
+    sA = min(100, 30 + sum(s["a"] for s in sigs) * 8 + sum(s["groei"] for s in sigs) * 4
+             + min(15, n_vac * 5) + min(10, n_site * 2))
+    sB = min(100, 30 + sum(s["b"] for s in sigs) * 8 + min(20, n_vac * 5)
+             + (8 if k["internationaal"] else 0) + min(8, n_site * 2))
+
     p = VORIGE.get(k["name"].lower())
-    d_out = d_nl = d_vac = n_nieuw = 0
+    d_out = d_nl = d_vac = d_site = n_nieuw = 0
     anom = None
     if p:
-        p_vac = int(p.get("vacatures") or 0)
-        d_out = sA - int(p.get("score_out") or 0)
-        d_nl  = sB - int(p.get("score_nl") or 0)
-        d_vac = n_vac - p_vac
+        p_vac  = int(p.get("vacatures") or 0)
+        p_site = int(p.get("vacatures_site") or 0)
+        d_out  = sA - int(p.get("score_out") or 0)
+        d_nl   = sB - int(p.get("score_nl") or 0)
+        d_vac  = n_vac - p_vac
+        d_site = n_site - p_site
         oude_titels = {str(s.get("titel", "")).lower() for s in (p.get("signalen") or [])}
         n_nieuw = sum(1 for s in sigs if str(s.get("titel", "")).lower() not in oude_titels)
-        # --- vacature-anomalieen ---
-        if d_vac >= 3 and n_vac >= 3:
-            anom = f"📈 vacatures opvallend toegenomen ({p_vac} → {n_vac})"
+        if d_site >= 3 and n_site >= 3:
+            anom = f"📈 site-vacatures opvallend toegenomen ({p_site} → {n_site})"
+        elif p_site >= 2 and d_site <= -2:
+            anom = f"📉 site-vacatures opvallend afgenomen ({p_site} → {n_site})"
+        elif n_site >= 5:
+            anom = f"🔥 structureel veel site-vacatures ({n_site})"
+        elif d_vac >= 3 and n_vac >= 3:
+            anom = f"📈 nieuws-vacatures opvallend toegenomen ({p_vac} → {n_vac})"
         elif p_vac >= 2 and d_vac <= -2:
-            anom = f"📉 vacatures opvallend afgenomen ({p_vac} → {n_vac})"
+            anom = f"📉 nieuws-vacatures opvallend afgenomen ({p_vac} → {n_vac})"
         elif n_vac >= 5:
-            anom = f"🔥 structureel veel vacatures ({n_vac})"
+            anom = f"🔥 structureel veel nieuws-vacatures ({n_vac})"
     else:
-        if n_vac >= 5:
-            anom = f"🔥 structureel veel vacatures ({n_vac})"
+        if n_site >= 5:
+            anom = f"🔥 structureel veel site-vacatures ({n_site})"
+        elif n_vac >= 5:
+            anom = f"🔥 structureel veel nieuws-vacatures ({n_vac})"
 
     leads.append({**k, "score_out": sA, "score_nl": sB,
                   "delta_out": d_out, "delta_nl": d_nl,
-                  "nieuwe_signalen": n_nieuw, "vac_delta": d_vac,
-                  "anomalie": anom, "vacatures": n_vac, "signalen": sigs})
+                  "nieuwe_signalen": n_nieuw, "vac_delta": d_vac, "site_delta": d_site,
+                  "anomalie": anom, "vacatures": n_vac,
+                  "vacatures_site": n_site, "carriere_url": carr,
+                  "suggesties": sugg,
+                  "email_algemeen": em_al, "tel_algemeen": tm_al,
+                  "signalen": sigs})
 
-    # --- wijzigingenlijst (voor de alert-balk in de app) ---
     redenen = []
     if n_nieuw:
         redenen.append(f"🆕 {n_nieuw} nieuw{'e' if n_nieuw != 1 else ''} signaal{'en' if n_nieuw != 1 else ''}")
@@ -253,12 +438,14 @@ for i, k in enumerate(kantoren.values()):
     elif d_nl < 0:
         redenen.append(f"⬇ Optie B {sB - d_nl}→{sB}")
     if abs(d_vac) >= 2:
-        richting = "+" if d_vac > 0 else ""
-        redenen.append(f"💼 vacatures {richting}{d_vac}")
+        redenen.append(f"💼 nieuws-vacatures {'+' if d_vac > 0 else ''}{d_vac}")
+    if abs(d_site) >= 2:
+        redenen.append(f"🌐 site-vacatures {'+' if d_site > 0 else ''}{d_site}")
     if anom:
         redenen.append(anom)
     if redenen:
-        gewichtje = n_nieuw * 2 + abs(d_out) + abs(d_nl) + max(0, d_vac) * 3 + (5 if anom else 0)
+        gewichtje = (n_nieuw * 2 + abs(d_out) + abs(d_nl) + max(0, d_vac) * 3
+                     + max(0, d_site) * 3 + (5 if anom else 0))
         wijzigingen.append({"naam": k["name"], "city": k["city"],
                             "tekst": " · ".join(redenen), "gewicht": gewichtje})
 
@@ -269,13 +456,16 @@ for i, k in enumerate(kantoren.values()):
 wijzigingen.sort(key=lambda w: w["gewicht"], reverse=True)
 wijzigingen = wijzigingen[:40]
 
-# ---------- 7. WEGSCHRIJVEN ----------
+# ---------- 8. WEGSCHRIJVEN ----------
 json.dump({
     "gegenereerd": str(datetime.datetime.now()),
     "vorige_scan": vorige_gen or None,
-    "bron": "Masterlijst-CSV (Big 4 + AV-Top 50) + Google News (+vacatures) + accountant.nl + AFM",
-    "let_op": "Scores zijn keyword-based, geen AI. Signalen bevatten echte titels, datums en links.",
+    "bron": "Masterlijst-CSV + Google News + eigen kantoorwebsites "
+            "(vacatures, contactpersonen, e-mail, telefoon) + accountant.nl + AFM",
+    "let_op": "Scores zijn keyword-based. Contactpersonen zijn SUGGESTIES van openbare "
+              "kantoorwebsites; de gebruiker bevestigt ze in de app.",
     "wijzigingen": wijzigingen,
     "leads": leads,
 }, open("leads.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-print(f"\nKlaar — {len(leads)} kantoren in leads.json, {len(wijzigingen)} kantoren met wijzigingen.")
+tot_sugg = sum(len(l.get("suggesties") or []) for l in leads)
+print(f"\nKlaar — {len(leads)} kantoren, {len(wijzigingen)} met wijzigingen, {tot_sugg} contact-suggesties.")

@@ -1,32 +1,32 @@
 {
- "gegenereerd": "2026-11-24 16:08:30.586223",
- "vorige_scan": "2026-11-24 13:16:09.500472",
+ "gegenereerd": "2026-11-25 06:41:28.731342",
+ "vorige_scan": "2026-11-24 16:08:30.586223",
  "bron": "Masterlijst-CSV + Google News (incl. offshoring-agent) + eigen kantoorwebsites (vacatures, contactpersonen, e-mail, telefoon, agent-woorden) + accountant.nl + AFM",
  "let_op": "Scores zijn keyword-based. Contactpersonen zijn SUGGESTIES van openbare kantoorwebsites; de gebruiker bevestigt ze in de app.",
  "wijzigingen": [
   {
-   "naam": "CROP accountants & adviseurs B.V.",
-   "city": "Amersfoort",
-   "tekst": "🆕 5 nieuwe signaalen · ⬆ Optie A 30→90",
-   "gewicht": 70
-  },
-  {
-   "naam": "ESJ Audit & Assurance B.V.",
-   "city": "Etten-Leur",
-   "tekst": "⬇ Optie A 74→30",
-   "gewicht": 44
-  },
-  {
-   "naam": "Auren Audit & Assurance Amersfoort B.V.",
-   "city": "Amersfoort",
-   "tekst": "🆕 1 nieuw signaal · ⬆ Optie A 30→54",
-   "gewicht": 26
+   "naam": "ETL Assurance & Overheidsaccountants B.V.",
+   "city": "Hoofddorp",
+   "tekst": "⬇ Optie A 54→30",
+   "gewicht": 24
   },
   {
    "naam": "Auren Audit & Assurance Amsterdam B.V.",
    "city": "Amstelveen",
-   "tekst": "🆕 1 nieuw signaal · ⬆ Optie A 30→54",
-   "gewicht": 26
+   "tekst": "⬇ Optie A 54→30",
+   "gewicht": 24
+  },
+  {
+   "naam": "Visser & Visser Audit en Assurance B.V.",
+   "city": "Dordrecht",
+   "tekst": "🆕 1 nieuw signaal · ⬆ Optie A 30→46",
+   "gewicht": 18
+  },
+  {
+   "naam": "BDO Audit & Assurance B.V.",
+   "city": "Eindhoven",
+   "tekst": "⬇ Optie A 38→30",
+   "gewicht": 8
   }
  ],
  "leads": [
@@ -166,9 +166,9 @@
    "internationaal": true,
    "eigenaar": "",
    "website": "",
-   "score_out": 38,
+   "score_out": 30,
    "score_nl": 38,
-   "delta_out": 0,
+   "delta_out": -8,
    "delta_nl": 0,
    "nieuwe_signalen": 0,
    "vac_delta": 0,
@@ -183,17 +183,7 @@
    "suggesties": [],
    "email_algemeen": "",
    "tel_algemeen": "",
-   "signalen": [
-    {
-     "titel": "BDO boekt omzetgroei in jubileumjaar - Accountant.nl",
-     "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNaXlpZGdJUTUxdEx0bmhHbXgzX3VlcWJ1YjdMSGJoN3ROanZjcHpkMmlQMmhQZEVPdXRSU0MzSklsYzZCcTJkbm1La1dfMTF1NHc5Y1FNemFvVlFnUTRkRzBfWXZ1S3Foa3k4OVUtY0h4V1g0ZEw0dXlMYlpKRFpGU3ZhNA?oc=5",
-     "datum": "Wed, 27 May 2026 07:00:00 GMT",
-     "bron": "Google News",
-     "a": 0,
-     "b": 0,
-     "groei": 2
-    }
-   ]
+   "signalen": []
   },
   {
    "name": "Moore DRV Audit B.V.",
@@ -424,9 +414,9 @@
    "internationaal": false,
    "eigenaar": "Mo",
    "website": "",
-   "score_out": 54,
+   "score_out": 30,
    "score_nl": 30,
-   "delta_out": 0,
+   "delta_out": -24,
    "delta_nl": 0,
    "nieuwe_signalen": 0,
    "vac_delta": 0,
@@ -441,17 +431,7 @@
    "suggesties": [],
    "email_algemeen": "",
    "tel_algemeen": "",
-   "signalen": [
-    {
-     "titel": "Fusies en overnames | \"Er gebeurt op dit moment heel erg veel bij ETL\" - Accountancy Vanmorgen ·",
-     "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNcnc0NE96bzFrQ0lPbnlXVmU1REQ0WU1aTGQ0QW9rVVlIakM3OU0xenB5eXZSd2lxR3JxcmlzdW5GQW0yajBOc21ldWEzcGRodGJmanVhN1Y0T1FINjh1WEQ5QTY2X3V6NHFUSEtxRWMyZnAwaWZBRVZxMmFodngtS3VMbWRGVThUbjh2d1dqQjJhYzdHS05CMUJZZTNwMDh4cHZBWHM4b3VkX3RtaUp4RW05OXc?oc=5",
-     "datum": "Wed, 15 May 2024 07:00:00 GMT",
-     "bron": "Google News",
-     "a": 0,
-     "b": 0,
-     "groei": 6
-    }
-   ]
+   "signalen": []
   },
   {
    "name": "Moore MKW Audit B.V.",
@@ -628,15 +608,6 @@
    "tel_algemeen": "",
    "signalen": [
     {
-     "titel": "PIA Group doet zijn zesde Noord-Hollandse overname - Accountant.nl",
-     "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxONVhFUkk0eVlJbFg3bjJVT2tqZWFHRlZ5QTMzZ3dndEtCb3ZRZEFjTllOWVE2dDRZQjUxLWc1YWJPbXN1clhIVmZVRXhwWHMwTVZRXzVQb2ppSVN6Qlh4MWJSQzA5Qi14cDRjNFBSUUp2bHV3Q29xeTNMREtfU0ZWeHo5TWY0RnZBcFRnNERNNTVpT2FmQkE?oc=5",
-     "datum": "Thu, 28 May 2026 07:00:00 GMT",
-     "bron": "Google News",
-     "a": 0,
-     "b": 0,
-     "groei": 3
-    },
-    {
      "titel": "PIA Group groeit verder na overname van Kaap Hoorn - Accountancy Vanmorgen ·",
      "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQRFlON3NEZE9MQnVENmU0SHRIZU9LYlZCQVRDQ0h0V1ZjZWpLUzNTYTFkVk92M2FBZUNHY0plSDliaTBBSy1tTzU5UGV1cHFOVE5yMU1Hc19VN1F6djd5MC1NUk9IUFlneGVLMzJFTWlqOXVmRm5JWVROVjBjc09HcHVuSGp6Yzd6LWI4UFZGS0dqZEw5TENrYWw4QnE5RHc?oc=5",
      "datum": "Thu, 20 Jun 2024 07:00:00 GMT",
@@ -644,6 +615,15 @@
      "a": 0,
      "b": 0,
      "groei": 7
+    },
+    {
+     "titel": "PIA Group doet zijn zesde Noord-Hollandse overname - Accountant.nl",
+     "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxONVhFUkk0eVlJbFg3bjJVT2tqZWFHRlZ5QTMzZ3dndEtCb3ZRZEFjTllOWVE2dDRZQjUxLWc1YWJPbXN1clhIVmZVRXhwWHMwTVZRXzVQb2ppSVN6Qlh4MWJSQzA5Qi14cDRjNFBSUUp2bHV3Q29xeTNMREtfU0ZWeHo5TWY0RnZBcFRnNERNNTVpT2FmQkE?oc=5",
+     "datum": "Thu, 28 May 2026 07:00:00 GMT",
+     "bron": "Google News",
+     "a": 0,
+     "b": 0,
+     "groei": 3
     }
    ]
   },
@@ -824,11 +804,11 @@
    "internationaal": false,
    "eigenaar": "Tom",
    "website": "",
-   "score_out": 30,
+   "score_out": 46,
    "score_nl": 30,
-   "delta_out": 0,
+   "delta_out": 16,
    "delta_nl": 0,
-   "nieuwe_signalen": 0,
+   "nieuwe_signalen": 1,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -841,7 +821,17 @@
    "suggesties": [],
    "email_algemeen": "",
    "tel_algemeen": "",
-   "signalen": []
+   "signalen": [
+    {
+     "titel": "Visser ’t Hooft Lyceum groeit uit huidige gebouwen: politiek steunt miljoenenverbouwing - Allesoverkatwijk.nl",
+     "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQRDFvMVVaVWFRQ3hHS0F2UGZFZUU3dE9MODNRTktwMUFjam5QdEtCTDdvbU51cHZsQnJjZ1J6WlhRXzVwcEtoWFJ0bGVpUlhwT2YxTGlIMzA0SXFHS3Rvc0JodGJIMFhDR0tZV3NManc3WmU3TmQ2Y21rY3FwQk5tTjd1SFVreWFpYkxuMF95eW1vV3pxaVU2TzRrQ1ZycHEzNnJHVUN3S1ZZUl82ZEZiQzRxa05RWEk?oc=5",
+     "datum": "Tue, 24 Nov 2026 18:15:00 GMT",
+     "bron": "Google News",
+     "a": 0,
+     "b": 0,
+     "groei": 4
+    }
+   ]
   },
   {
    "name": "Schuiteman Audit & Assurance B.V.",
@@ -919,9 +909,9 @@
    "website": "",
    "score_out": 90,
    "score_nl": 30,
-   "delta_out": 60,
+   "delta_out": 0,
    "delta_nl": 0,
-   "nieuwe_signalen": 5,
+   "nieuwe_signalen": 0,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -1849,9 +1839,9 @@
    "website": "",
    "score_out": 54,
    "score_nl": 38,
-   "delta_out": 24,
+   "delta_out": 0,
    "delta_nl": 0,
-   "nieuwe_signalen": 1,
+   "nieuwe_signalen": 0,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -1888,11 +1878,11 @@
    "internationaal": true,
    "eigenaar": "",
    "website": "",
-   "score_out": 54,
+   "score_out": 30,
    "score_nl": 38,
-   "delta_out": 24,
+   "delta_out": -24,
    "delta_nl": 0,
-   "nieuwe_signalen": 1,
+   "nieuwe_signalen": 0,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -1905,17 +1895,7 @@
    "suggesties": [],
    "email_algemeen": "",
    "tel_algemeen": "",
-   "signalen": [
-    {
-     "titel": "Fusies en overnames in de accountancy: Gebrek aan opvolging grote aanjager - Accountantweek",
-     "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxNM08tcU1OTWNQQkx0N2VEcUtDTTZxZVFxNV95WFNGeTZRY1VXLXllbmt0QmF0cjZmd0YwQzE2MWRDUXdQWFR6XzBFVnF3MmxIUE4xLVVtMEZrb0F2ejRtcU9lZE1ab0lWNUlqTDRwenhscmZVcVNybmpGSVpFSENkR3Y3M3E1bks0WTBsZWNab2pRMTRKYkt1TmZzM3ktSVcwSHRwbF9INHRhTDdB?oc=5",
-     "datum": "Wed, 25 Apr 2018 07:00:00 GMT",
-     "bron": "Google News",
-     "a": 0,
-     "b": 0,
-     "groei": 6
-    }
-   ]
+   "signalen": []
   },
   {
    "name": "HLB Den Hartog Accountants & Consultants",
@@ -3756,7 +3736,7 @@
    "website": "",
    "score_out": 30,
    "score_nl": 30,
-   "delta_out": -44,
+   "delta_out": 0,
    "delta_nl": 0,
    "nieuwe_signalen": 0,
    "vac_delta": 0,

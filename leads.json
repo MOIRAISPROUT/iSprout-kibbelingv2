@@ -1,32 +1,26 @@
 {
- "gegenereerd": "2026-11-25 06:41:28.731342",
- "vorige_scan": "2026-11-24 16:08:30.586223",
+ "gegenereerd": "2026-11-26 06:46:56.139463",
+ "vorige_scan": "2026-11-25 06:41:28.731342",
  "bron": "Masterlijst-CSV + Google News (incl. offshoring-agent) + eigen kantoorwebsites (vacatures, contactpersonen, e-mail, telefoon, agent-woorden) + accountant.nl + AFM",
  "let_op": "Scores zijn keyword-based. Contactpersonen zijn SUGGESTIES van openbare kantoorwebsites; de gebruiker bevestigt ze in de app.",
  "wijzigingen": [
   {
-   "naam": "ETL Assurance & Overheidsaccountants B.V.",
-   "city": "Hoofddorp",
-   "tekst": "⬇ Optie A 54→30",
-   "gewicht": 24
-  },
-  {
    "naam": "Auren Audit & Assurance Amsterdam B.V.",
    "city": "Amstelveen",
+   "tekst": "🆕 1 nieuw signaal · ⬆ Optie A 30→54",
+   "gewicht": 26
+  },
+  {
+   "naam": "Auren Audit & Assurance Amersfoort B.V.",
+   "city": "Amersfoort",
    "tekst": "⬇ Optie A 54→30",
    "gewicht": 24
   },
   {
-   "naam": "Visser & Visser Audit en Assurance B.V.",
-   "city": "Dordrecht",
-   "tekst": "🆕 1 nieuw signaal · ⬆ Optie A 30→46",
-   "gewicht": 18
-  },
-  {
-   "naam": "BDO Audit & Assurance B.V.",
-   "city": "Eindhoven",
-   "tekst": "⬇ Optie A 38→30",
-   "gewicht": 8
+   "naam": "CROP accountants & adviseurs B.V.",
+   "city": "Amersfoort",
+   "tekst": "⬇ Optie A 90→78",
+   "gewicht": 12
   }
  ],
  "leads": [
@@ -168,7 +162,7 @@
    "website": "",
    "score_out": 30,
    "score_nl": 38,
-   "delta_out": -8,
+   "delta_out": 0,
    "delta_nl": 0,
    "nieuwe_signalen": 0,
    "vac_delta": 0,
@@ -416,7 +410,7 @@
    "website": "",
    "score_out": 30,
    "score_nl": 30,
-   "delta_out": -24,
+   "delta_out": 0,
    "delta_nl": 0,
    "nieuwe_signalen": 0,
    "vac_delta": 0,
@@ -608,15 +602,6 @@
    "tel_algemeen": "",
    "signalen": [
     {
-     "titel": "PIA Group groeit verder na overname van Kaap Hoorn - Accountancy Vanmorgen ·",
-     "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQRFlON3NEZE9MQnVENmU0SHRIZU9LYlZCQVRDQ0h0V1ZjZWpLUzNTYTFkVk92M2FBZUNHY0plSDliaTBBSy1tTzU5UGV1cHFOVE5yMU1Hc19VN1F6djd5MC1NUk9IUFlneGVLMzJFTWlqOXVmRm5JWVROVjBjc09HcHVuSGp6Yzd6LWI4UFZGS0dqZEw5TENrYWw4QnE5RHc?oc=5",
-     "datum": "Thu, 20 Jun 2024 07:00:00 GMT",
-     "bron": "Google News",
-     "a": 0,
-     "b": 0,
-     "groei": 7
-    },
-    {
      "titel": "PIA Group doet zijn zesde Noord-Hollandse overname - Accountant.nl",
      "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxONVhFUkk0eVlJbFg3bjJVT2tqZWFHRlZ5QTMzZ3dndEtCb3ZRZEFjTllOWVE2dDRZQjUxLWc1YWJPbXN1clhIVmZVRXhwWHMwTVZRXzVQb2ppSVN6Qlh4MWJSQzA5Qi14cDRjNFBSUUp2bHV3Q29xeTNMREtfU0ZWeHo5TWY0RnZBcFRnNERNNTVpT2FmQkE?oc=5",
      "datum": "Thu, 28 May 2026 07:00:00 GMT",
@@ -624,6 +609,15 @@
      "a": 0,
      "b": 0,
      "groei": 3
+    },
+    {
+     "titel": "PIA Group groeit verder na overname van Kaap Hoorn - Accountancy Vanmorgen ·",
+     "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQRFlON3NEZE9MQnVENmU0SHRIZU9LYlZCQVRDQ0h0V1ZjZWpLUzNTYTFkVk92M2FBZUNHY0plSDliaTBBSy1tTzU5UGV1cHFOVE5yMU1Hc19VN1F6djd5MC1NUk9IUFlneGVLMzJFTWlqOXVmRm5JWVROVjBjc09HcHVuSGp6Yzd6LWI4UFZGS0dqZEw5TENrYWw4QnE5RHc?oc=5",
+     "datum": "Thu, 20 Jun 2024 07:00:00 GMT",
+     "bron": "Google News",
+     "a": 0,
+     "b": 0,
+     "groei": 7
     }
    ]
   },
@@ -806,9 +800,9 @@
    "website": "",
    "score_out": 46,
    "score_nl": 30,
-   "delta_out": 16,
+   "delta_out": 0,
    "delta_nl": 0,
-   "nieuwe_signalen": 1,
+   "nieuwe_signalen": 0,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -907,9 +901,9 @@
    "internationaal": false,
    "eigenaar": "Tom",
    "website": "",
-   "score_out": 90,
+   "score_out": 78,
    "score_nl": 30,
-   "delta_out": 0,
+   "delta_out": -12,
    "delta_nl": 0,
    "nieuwe_signalen": 0,
    "vac_delta": 0,
@@ -955,15 +949,6 @@
     {
      "titel": "De Jong & Laan realiseert met CROP overname nummer negen - MenA.nl",
      "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNNHBqTUl6SHdsWDl3aWYyX3lDaHZBN3Z1M005ZWNRZ0xUczFLS2J0UlMyR0pNZzNYT1NUd3gzaDV1VG8zQURDLTVfMDJ2VkRCZHA3OWYxdFRLSlFPQWlnTDRuelpxUWdGWU1PYlhxWm5WQUh1RGJ4SFNtVnZSX01Rc2xZOWxNakcyU1EwdW5jQ05xME5uUWVuYjJfcFpBd3F6TVNUNFFzNA?oc=5",
-     "datum": "Wed, 13 May 2026 07:00:00 GMT",
-     "bron": "Google News",
-     "a": 0,
-     "b": 0,
-     "groei": 3
-    },
-    {
-     "titel": "De Jong & Laan kondigt overname aan van branchegenoot CROP - Consultancy.nl",
-     "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNUG1KVERCcjgxa2dlRzJJNnFEYnlXaTh5RkZTSlFWRUphLW1qNEI5MElOTG9Rb251eHVCdzR1aVY0ZFZzTGtPM1VmRXo5d202cC1rd0NDbVZpRnExT084Q3JaRFBWNmhfdk9tR0VBSWE0bko5ZWh4ek5DYlhwV3otVWFUcS1wcGk3ay11TTRCR1RpLURjNnRQTkxxbEvSAaIBQVVfeXFMUGs4UkdYeU1GZnRHcW0zYXRQOHlEQ3BuZXU4QmlIUXY3a2tnQVZGNWRacGpNaW9aTUVYRjh2RENrYXQ3dHJRb0x2dmFqYjFDQVprczdxMWkzSWZIYS1HR1UxY01SMTJPMU5NOVhHQ3lCQVhwWWFUZjczeHNmX0pDQnFDeTRKdzJXenREYzhCTmN5WTY3N1RVVWpBU2dJRWlyakpR?oc=5",
      "datum": "Wed, 13 May 2026 07:00:00 GMT",
      "bron": "Google News",
      "a": 0,
@@ -1837,11 +1822,42 @@
    "internationaal": true,
    "eigenaar": "",
    "website": "",
-   "score_out": 54,
+   "score_out": 30,
    "score_nl": 38,
-   "delta_out": 0,
+   "delta_out": -24,
    "delta_nl": 0,
    "nieuwe_signalen": 0,
+   "vac_delta": 0,
+   "site_delta": 0,
+   "anomalie": null,
+   "vacatures": 0,
+   "vacatures_site": 0,
+   "carriere_url": "",
+   "site_vac_streak": 0,
+   "vac_streak": 0,
+   "agent_meldingen": [],
+   "suggesties": [],
+   "email_algemeen": "",
+   "tel_algemeen": "",
+   "signalen": []
+  },
+  {
+   "name": "Auren Audit & Assurance Amsterdam B.V.",
+   "city": "Amstelveen",
+   "lat": 52.3,
+   "lng": 4.86,
+   "klasse": "Buiten AV-Top 50",
+   "fte": null,
+   "omzet": null,
+   "netwerk": "Auren",
+   "internationaal": true,
+   "eigenaar": "",
+   "website": "",
+   "score_out": 54,
+   "score_nl": 38,
+   "delta_out": 24,
+   "delta_nl": 0,
+   "nieuwe_signalen": 1,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -1865,37 +1881,6 @@
      "groei": 6
     }
    ]
-  },
-  {
-   "name": "Auren Audit & Assurance Amsterdam B.V.",
-   "city": "Amstelveen",
-   "lat": 52.3,
-   "lng": 4.86,
-   "klasse": "Buiten AV-Top 50",
-   "fte": null,
-   "omzet": null,
-   "netwerk": "Auren",
-   "internationaal": true,
-   "eigenaar": "",
-   "website": "",
-   "score_out": 30,
-   "score_nl": 38,
-   "delta_out": -24,
-   "delta_nl": 0,
-   "nieuwe_signalen": 0,
-   "vac_delta": 0,
-   "site_delta": 0,
-   "anomalie": null,
-   "vacatures": 0,
-   "vacatures_site": 0,
-   "carriere_url": "",
-   "site_vac_streak": 0,
-   "vac_streak": 0,
-   "agent_meldingen": [],
-   "suggesties": [],
-   "email_algemeen": "",
-   "tel_algemeen": "",
-   "signalen": []
   },
   {
    "name": "HLB Den Hartog Accountants & Consultants",

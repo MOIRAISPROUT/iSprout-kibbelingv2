@@ -1,26 +1,38 @@
 {
- "gegenereerd": "2026-11-26 06:46:56.139463",
- "vorige_scan": "2026-11-25 06:41:28.731342",
+ "gegenereerd": "2026-11-27 06:50:25.541884",
+ "vorige_scan": "2026-11-26 06:46:56.139463",
  "bron": "Masterlijst-CSV + Google News (incl. offshoring-agent) + eigen kantoorwebsites (vacatures, contactpersonen, e-mail, telefoon, agent-woorden) + accountant.nl + AFM",
  "let_op": "Scores zijn keyword-based. Contactpersonen zijn SUGGESTIES van openbare kantoorwebsites; de gebruiker bevestigt ze in de app.",
  "wijzigingen": [
   {
    "naam": "Auren Audit & Assurance Amsterdam B.V.",
    "city": "Amstelveen",
-   "tekst": "🆕 1 nieuw signaal · ⬆ Optie A 30→54",
-   "gewicht": 26
-  },
-  {
-   "naam": "Auren Audit & Assurance Amersfoort B.V.",
-   "city": "Amersfoort",
    "tekst": "⬇ Optie A 54→30",
    "gewicht": 24
   },
   {
+   "naam": "Reanda Audit & Assurance B.V.",
+   "city": "Amsterdam",
+   "tekst": "🆕 1 nieuw signaal · ⬆ Optie A 46→62",
+   "gewicht": 18
+  },
+  {
+   "naam": "Steens & Partners Accountants en Adviseurs B.V.",
+   "city": "Rotterdam",
+   "tekst": "🆕 1 nieuw signaal · ⬆ Optie A 38→50",
+   "gewicht": 14
+  },
+  {
    "naam": "CROP accountants & adviseurs B.V.",
    "city": "Amersfoort",
-   "tekst": "⬇ Optie A 90→78",
-   "gewicht": 12
+   "tekst": "🆕 1 nieuw signaal · ⬆ Optie A 78→90",
+   "gewicht": 14
+  },
+  {
+   "naam": "BDO Audit & Assurance B.V.",
+   "city": "Eindhoven",
+   "tekst": "🆕 1 nieuw signaal · ⬆ Optie A 30→38",
+   "gewicht": 10
   }
  ],
  "leads": [
@@ -160,11 +172,11 @@
    "internationaal": true,
    "eigenaar": "",
    "website": "",
-   "score_out": 30,
+   "score_out": 38,
    "score_nl": 38,
-   "delta_out": 0,
+   "delta_out": 8,
    "delta_nl": 0,
-   "nieuwe_signalen": 0,
+   "nieuwe_signalen": 1,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -177,7 +189,17 @@
    "suggesties": [],
    "email_algemeen": "",
    "tel_algemeen": "",
-   "signalen": []
+   "signalen": [
+    {
+     "titel": "BDO boekt omzetgroei in jubileumjaar - Accountant.nl",
+     "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNaXlpZGdJUTUxdEx0bmhHbXgzX3VlcWJ1YjdMSGJoN3ROanZjcHpkMmlQMmhQZEVPdXRSU0MzSklsYzZCcTJkbm1La1dfMTF1NHc5Y1FNemFvVlFnUTRkRzBfWXZ1S3Foa3k4OVUtY0h4V1g0ZEw0dXlMYlpKRFpGU3ZhNA?oc=5",
+     "datum": "Wed, 27 May 2026 07:00:00 GMT",
+     "bron": "Google News",
+     "a": 0,
+     "b": 0,
+     "groei": 2
+    }
+   ]
   },
   {
    "name": "Moore DRV Audit B.V.",
@@ -633,11 +655,11 @@
    "internationaal": false,
    "eigenaar": "Tom",
    "website": "",
-   "score_out": 38,
+   "score_out": 50,
    "score_nl": 30,
-   "delta_out": 0,
+   "delta_out": 12,
    "delta_nl": 0,
-   "nieuwe_signalen": 0,
+   "nieuwe_signalen": 1,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -651,6 +673,15 @@
    "email_algemeen": "",
    "tel_algemeen": "",
    "signalen": [
+    {
+     "titel": "Na 75 jaar kiest Steens & Partners voor overname door PIA - Accountantweek",
+     "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxON2hUWXBBWWZuaEdISDVUX1Fsc0lqeEZ0akNSS3p1cHNFQ1ZQcXNvNDVzU0R1SDQ0LUo5Q3JlUnRhbFA3RHNPUXdCdy1TVVd4Smh6VGgyMXh3LW9ZNmhfWEZQeXlfbUt3cDByb3hobE85WlNKNlFBekc5RkFBUk12SmlJSjhIRzBzb1NtZHJ0NGZzWVp2?oc=5",
+     "datum": "Wed, 04 Sep 2024 07:00:00 GMT",
+     "bron": "Google News",
+     "a": 0,
+     "b": 0,
+     "groei": 3
+    },
     {
      "titel": "Jan Steen groeide op in een welvarend en kunstzinnig Leiden - Historiek",
      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE0zZC1GWTVlbXJLNXhnWE9VMHdJVHZmMDVtd0VuMFo4SFhiUWNOUVhmRHY5cnRnN0pLWi01dlVfTm5zaGdQX2xJT0x3eE1UcENwOG4tOFV5cFVRTUJKR0x2S1o3NHdTa19Yckx6a1gxcTNOa0k?oc=5",
@@ -901,11 +932,11 @@
    "internationaal": false,
    "eigenaar": "Tom",
    "website": "",
-   "score_out": 78,
+   "score_out": 90,
    "score_nl": 30,
-   "delta_out": -12,
+   "delta_out": 12,
    "delta_nl": 0,
-   "nieuwe_signalen": 0,
+   "nieuwe_signalen": 1,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -929,15 +960,6 @@
      "groei": 3
     },
     {
-     "titel": "De Jong & Laan rondt overname CROP af - Accountancy Vanmorgen ·",
-     "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQZGhVSE9OU0pzUkxJdFZ2MjVhTTNMQm9YS3JES2ZKNmdpUkwzcVpYcnUyN0FrOXFlQ09Bam1EZEpwZ2l2ckdrT0wwclJncy1NNDBwVkJOSUhfckJ3aGJIdFFVQ3dzcjVESGgzX2xpQ0FSMjZ4b3NfaDRFdXdNcU4tS3NGTlhqODBnMm9J?oc=5",
-     "datum": "Wed, 02 Sep 2026 07:00:00 GMT",
-     "bron": "Google News",
-     "a": 0,
-     "b": 0,
-     "groei": 3
-    },
-    {
      "titel": "De Jong & Laan doet met CROP grootste overname tot dusver - Accountant.nl",
      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxPUTFPY0NGMWVyQk4tZlZXSTJTVWgxNkpfSko2U1lwcjJ0Smt0YzVfdnlWNXBCOFNnNmliQWFReXUwZmRNckxVOEhWb0h2VkFldGxUcWpjb05uU0UwODQ0ZGM3ejVET3FSSU9uazNZNWpTRHk2aFlmNDA4T0x1SHl0U3dpTVlMZXRUSU5taGlZMHc2SjdHczZkNUIydUdMUQ?oc=5",
      "datum": "Tue, 12 May 2026 07:00:00 GMT",
@@ -950,6 +972,24 @@
      "titel": "De Jong & Laan realiseert met CROP overname nummer negen - MenA.nl",
      "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNNHBqTUl6SHdsWDl3aWYyX3lDaHZBN3Z1M005ZWNRZ0xUczFLS2J0UlMyR0pNZzNYT1NUd3gzaDV1VG8zQURDLTVfMDJ2VkRCZHA3OWYxdFRLSlFPQWlnTDRuelpxUWdGWU1PYlhxWm5WQUh1RGJ4SFNtVnZSX01Rc2xZOWxNakcyU1EwdW5jQ05xME5uUWVuYjJfcFpBd3F6TVNUNFFzNA?oc=5",
      "datum": "Wed, 13 May 2026 07:00:00 GMT",
+     "bron": "Google News",
+     "a": 0,
+     "b": 0,
+     "groei": 3
+    },
+    {
+     "titel": "De Jong & Laan kondigt overname aan van branchegenoot CROP - Consultancy.nl",
+     "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNUG1KVERCcjgxa2dlRzJJNnFEYnlXaTh5RkZTSlFWRUphLW1qNEI5MElOTG9Rb251eHVCdzR1aVY0ZFZzTGtPM1VmRXo5d202cC1rd0NDbVZpRnExT084Q3JaRFBWNmhfdk9tR0VBSWE0bko5ZWh4ek5DYlhwV3otVWFUcS1wcGk3ay11TTRCR1RpLURjNnRQTkxxbEvSAaIBQVVfeXFMUGs4UkdYeU1GZnRHcW0zYXRQOHlEQ3BuZXU4QmlIUXY3a2tnQVZGNWRacGpNaW9aTUVYRjh2RENrYXQ3dHJRb0x2dmFqYjFDQVprczdxMWkzSWZIYS1HR1UxY01SMTJPMU5NOVhHQ3lCQVhwWWFUZjczeHNmX0pDQnFDeTRKdzJXenREYzhCTmN5WTY3N1RVVWpBU2dJRWlyakpR?oc=5",
+     "datum": "Wed, 13 May 2026 07:00:00 GMT",
+     "bron": "Google News",
+     "a": 0,
+     "b": 0,
+     "groei": 3
+    },
+    {
+     "titel": "De Jong & Laan rondt overname CROP af - Accountancy Vanmorgen ·",
+     "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQZGhVSE9OU0pzUkxJdFZ2MjVhTTNMQm9YS3JES2ZKNmdpUkwzcVpYcnUyN0FrOXFlQ09Bam1EZEpwZ2l2ckdrT0wwclJncy1NNDBwVkJOSUhfckJ3aGJIdFFVQ3dzcjVESGgzX2xpQ0FSMjZ4b3NfaDRFdXdNcU4tS3NGTlhqODBnMm9J?oc=5",
+     "datum": "Wed, 02 Sep 2026 07:00:00 GMT",
      "bron": "Google News",
      "a": 0,
      "b": 0,
@@ -1772,11 +1812,11 @@
    "internationaal": true,
    "eigenaar": "Mo",
    "website": "",
-   "score_out": 46,
+   "score_out": 62,
    "score_nl": 38,
-   "delta_out": 0,
+   "delta_out": 16,
    "delta_nl": 0,
-   "nieuwe_signalen": 0,
+   "nieuwe_signalen": 1,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -1790,6 +1830,15 @@
    "email_algemeen": "",
    "tel_algemeen": "",
    "signalen": [
+    {
+     "titel": "AV-Top 50: omzet grootste accountantskantoren groeit met 8 procent - Accountant.nl",
+     "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQdkttdHJTSzl6M0xUdVpoOFl5MTFEZm50T3lQMmVIRnNJQl94NFVxSlVEQm9iTUtYc0lpREpDQTczdHFYaERjV2tvQlVOaHhCYVJ0V1Y5UW9UaDdlMjI5emZqZkQ0N0l4cG1UODU0LXFKNHAyMmNDOW9uODRZamEzbUhjUm9xWjhRblJtRW1hbmJfelJjdjJjeWl3RHE4RzdpTVphM21EVEhQLTg?oc=5",
+     "datum": "Thu, 26 Nov 2026 14:34:26 GMT",
+     "bron": "Google News",
+     "a": 0,
+     "b": 0,
+     "groei": 4
+    },
     {
      "titel": "Schaalbaar IT-beheer sluit naadloos aan bij het snelgroeiende Reanda - Accountancy Vanmorgen ·",
      "link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOMjRSUDRFeXE5dllqQmlUcXZKS3RQbE85UmZvQlB5U2Q1OUZzUHRRSFZsOGEzeTkwcjljdkVzUElQSldqclNJZnhoNzZGSkZheFVjdFB0N3FhMHpwVWk0bU1VeE9XTXhha3c3eUNRbzI3TXEyOVFGRmZkdTJPa0VfQ2JFZ0VESGZOSGdRWmx3aHlvcEwwZnJxZnRPZzVUcFBQZmRpbEhuUWNjbzgyeGVDZl8yV0ZkekY4WUJkMDlpLVVHa3BOcTBHMHdtOA?oc=5",
@@ -1824,7 +1873,7 @@
    "website": "",
    "score_out": 30,
    "score_nl": 38,
-   "delta_out": -24,
+   "delta_out": 0,
    "delta_nl": 0,
    "nieuwe_signalen": 0,
    "vac_delta": 0,
@@ -1853,11 +1902,11 @@
    "internationaal": true,
    "eigenaar": "",
    "website": "",
-   "score_out": 54,
+   "score_out": 30,
    "score_nl": 38,
-   "delta_out": 24,
+   "delta_out": -24,
    "delta_nl": 0,
-   "nieuwe_signalen": 1,
+   "nieuwe_signalen": 0,
    "vac_delta": 0,
    "site_delta": 0,
    "anomalie": null,
@@ -1870,17 +1919,7 @@
    "suggesties": [],
    "email_algemeen": "",
    "tel_algemeen": "",
-   "signalen": [
-    {
-     "titel": "Fusies en overnames in de accountancy: Gebrek aan opvolging grote aanjager - Accountantweek",
-     "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxNM08tcU1OTWNQQkx0N2VEcUtDTTZxZVFxNV95WFNGeTZRY1VXLXllbmt0QmF0cjZmd0YwQzE2MWRDUXdQWFR6XzBFVnF3MmxIUE4xLVVtMEZrb0F2ejRtcU9lZE1ab0lWNUlqTDRwenhscmZVcVNybmpGSVpFSENkR3Y3M3E1bks0WTBsZWNab2pRMTRKYkt1TmZzM3ktSVcwSHRwbF9INHRhTDdB?oc=5",
-     "datum": "Wed, 25 Apr 2018 07:00:00 GMT",
-     "bron": "Google News",
-     "a": 0,
-     "b": 0,
-     "groei": 6
-    }
-   ]
+   "signalen": []
   },
   {
    "name": "HLB Den Hartog Accountants & Consultants",
